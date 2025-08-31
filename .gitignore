@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pkl
+*.log
+*.sqlite3
+
+# Virtual env
+venv/
+.env/
+.venv/
+
+# FastAPI uploads
+backend/uploads/
+*.txt
+
+# Faster-whisper / HuggingFace cache
+~/.cache/
+.cache/
+huggingface/
+hf_cache/
+*.bin
+
+# Node / Frontend (if you add JS build tools later)
+node_modules/
+dist/
+*.lock
+
+# Docker
+*.pid
+*.seed
+*.tar
+*.log
+docker-compose.override.yml
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp

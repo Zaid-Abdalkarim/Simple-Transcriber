@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Whisper Transcriber</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white shadow-lg rounded-2xl p-8 max-w-lg w-full">
+    <h1 class="text-2xl font-bold text-gray-800 text-center mb-6">Whisper Transcriber</h1>
+
+    <form id="uploadForm" class="flex flex-col items-center space-y-4">
+      <input type="file" id="fileInput" name="file" accept="audio/*,video/*"
+        class="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4
+        file:rounded-full file:border-0 file:text-sm file:font-semibold
+        file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+        required />
+
+      <button type="submit"
+        class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg w-full">
+        Upload & Transcribe
+      </button>
+    </form>
+
+    <div class="mt-6">
+      <h3 class="text-lg font-semibold text-gray-700">Transcript:</h3>
+      <pre id="transcriptOutput" class="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-2 text-gray-800 text-sm whitespace-pre-wrap"></pre>
+      <a id="downloadLink" class="mt-4 block text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg hidden">
+        Download Transcript
+      </a>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('uploadForm');
+    const transcriptOutput = document.getElementById('transcriptOutput');
+    const downloadLink = document.getElementById('downloadLink');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      transcriptOutput.textContent = "Processing...";
+      downloadLink.classList.add("hidden");
+
+      const fileInput = document.getElementById('fileInput');
+      const formData = new FormData();
+      formData.append('file', fileInput.files[0]);
+
+      try {
+        const response = await fetch("http://localhost:5000/transcribe", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await response.json();
+
+        if (data.error) {
+          transcriptOutput.textContent = "Error: " + data.error;
+          return;
+        }
+
+        transcriptOutput.textContent = data.transcript;
+        downloadLink.href = "data:text/plain;charset=utf-8," + encodeURIComponent(data.transcript);
+        downloadLink.download = data.transcript_file;
+        downloadLink.textContent = "Download Transcript";
+        downloadLink.classList.remove("hidden");
+      } catch (err) {
+        transcriptOutput.textContent = "Error: " + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
